@@ -86,9 +86,16 @@ struct exact_t
 
 template <typename T>
 inline constexpr auto clz_(T) -> not_supported_t { IMMER_UNREACHABLE; return {}; }
+#if defined(_MSC_VER) && !defined(__clang__)
+#include <intrin.h>
+inline auto clz_(unsigned int x) { return __lzcnt(x); }
+inline auto clz_(unsigned long x) { return __lzcnt64(x); }
+inline auto clz_(unsigned long long x) { return __lzcnt64(x); }
+#else
 inline constexpr auto clz_(unsigned int x) { return __builtin_clz(x); }
 inline constexpr auto clz_(unsigned long x) { return __builtin_clzl(x); }
 inline constexpr auto clz_(unsigned long long x) { return __builtin_clzll(x); }
+#endif
 
 template <typename T>
 inline constexpr T log2_aux(T x, T r = 0)
@@ -98,14 +105,14 @@ inline constexpr T log2_aux(T x, T r = 0)
 
 template <typename T>
 inline constexpr auto log2(T x)
-    -> std::enable_if_t<!std::is_same<decltype(clz_(x)), not_supported_t>{}, T>
+    -> std::enable_if_t<!std::is_same_v<decltype(clz_(x)), not_supported_t>, T>
 {
     return x == 0 ? 0 : sizeof(std::size_t) * 8 - 1 - clz_(x);
 }
 
 template <typename T>
 inline constexpr auto log2(T x)
-    -> std::enable_if_t<std::is_same<decltype(clz_(x)), not_supported_t>{}, T>
+    -> std::enable_if_t<std::is_same_v<decltype(clz_(x)), not_supported_t>, T>
 {
     return log2_aux(x);
 }

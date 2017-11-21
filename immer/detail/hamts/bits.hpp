@@ -21,6 +21,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstddef>
 
 namespace immer {
 namespace detail {
@@ -50,7 +51,11 @@ constexpr T max_shift = max_depth<B, count_t> * B;
 inline count_t popcount(bitmap_t x)
 {
 #if IMMER_HAS_BUILTIN_POPCOUNT
+#if defined(_MSC_VER) && !defined(__clang__)
+    return __popcnt(x);
+#else
     return __builtin_popcount(x);
+#endif // MSVC
 #else
     // More alternatives:
     // https://en.wikipedia.org/wiki/Hamming_weight

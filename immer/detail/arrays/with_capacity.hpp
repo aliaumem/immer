@@ -20,6 +20,8 @@
 
 #pragma once
 
+#include <algorithm>
+
 #include <immer/detail/arrays/no_capacity.hpp>
 
 namespace immer {

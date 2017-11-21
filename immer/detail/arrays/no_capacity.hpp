@@ -20,6 +20,8 @@
 
 #pragma once
 
+#include <stdexcept>
+
 #include <immer/detail/arrays/node.hpp>
 
 namespace immer {
